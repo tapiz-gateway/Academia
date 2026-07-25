@@ -1,39 +1,140 @@
-// nodes/contrato.js
-const { ethers } = require("ethers");
+import math
+from collections import defaultdict
 
-const RPC = "https://rpc.tu-red";
-const provider = new ethers.providers.JsonRpcProvider(RPC);
 
-// clave que ejecuta la tx
-const EXECUTOR_KEY = "0xTU_PRIVATE_KEY";
-const wallet = new ethers.Wallet(EXECUTOR_KEY, provider);
+ARCHIVO = "grafo.txt"
 
-const ABI = [
-  "function verificar(address user,uint256 exp,uint256 nonce,bytes firma) public returns (bool)"
-];
 
-const CONTRACT_ADDRESS = "0xTU_CONTRATO";
+def cargar_grafo():
 
-const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, wallet);
+    grafo = defaultdict(set)
+    inverso = defaultdict(set)
 
-module.exports = async (state) => {
-  try {
-    const tx = await contract.verificar(
-      state.user,
-      state.exp,
-      state.nonce,
-      state.firma
-    );
+    with open(
+        ARCHIVO,
+        "r",
+        encoding="utf-8"
+    ) as f:
 
-    await tx.wait();
+        for linea in f:
 
-    return {
-      ...state,
-      tx_hash: tx.hash,
-      acceso_onchain: true
-    };
+            partes = linea.strip().split()
 
-  } catch (e) {
-    return { error: e.message };
-  }
-};
+            if len(partes) != 2:
+                continue
+
+            a,b = partes
+
+            grafo[a].add(b)
+            inverso[b].add(a)
+
+
+    return grafo, inverso
+
+
+
+def centralidad(grafo, inverso):
+
+    nodos = set(
+        grafo.keys()
+    )
+
+    nodos.update(
+        inverso.keys()
+    )
+
+
+    resultado = []
+
+
+    for n in nodos:
+
+        salida = len(
+            grafo[n]
+        )
+
+        entrada = len(
+            inverso[n]
+        )
+
+
+        # peso Tapiz simple:
+        # conexiones + equilibrio entrada/salida
+
+        energia = math.sqrt(
+            salida**2 +
+            entrada**2
+        )
+
+
+        equilibrio = (
+            min(salida,entrada)
+            /
+            max(
+                salida,
+                entrada,
+                1
+            )
+        )
+
+
+        central = (
+            energia *
+            (1 + equilibrio)
+        )
+
+
+        resultado.append(
+            (
+                central,
+                n,
+                entrada,
+                salida
+            )
+        )
+
+
+    return sorted(
+        resultado,
+        reverse=True
+    )
+
+
+
+def main():
+
+    grafo,inverso = cargar_grafo()
+
+
+    ranking = centralidad(
+        grafo,
+        inverso
+    )
+
+
+    print("=== RANKING NODOS CENTRALES ===")
+    print()
+
+
+    for i,x in enumerate(
+        ranking[:50],
+        1
+    ):
+
+        valor,n,entrada,salida = x
+
+        print(
+            i,
+            n,
+            "C=",
+            round(valor,3),
+            "IN=",
+            entrada,
+            "OUT=",
+            salida
+        )
+
+
+
+if __name__ == "__main__":
+    main()
