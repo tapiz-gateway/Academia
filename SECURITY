@@ -1,0 +1,3 @@
+print("=== TAPIZ COMMAND DISCOVERY ===")
+
+for root in data["roots"]:
