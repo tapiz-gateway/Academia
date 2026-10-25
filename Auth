@@ -1,23 +1,9 @@
-// nodes/github_auth.js
-module.exports = async (state) => {
-
-  // aqui deberias validar contra API real
-  if (!state.github_token) {
-    return { error: "token github faltante" };
-  }
-
-  // simulacion de interseccion
-  const permisos_user = ["read"];
-  const permisos_app = ["read", "write"];
-
-  const interseccion = permisos_user.filter(p =>
-    permisos_app.includes(p)
-  );
-
-  return {
-    ...state,
-    permisos: interseccion,
-    token_valido: true,
-    exp: Date.now() + (8 * 60 * 60 * 1000)
-  };
-};
+~ $ python -c "import sys; sys.path.insert(0,'lab/nomas/oficina_mia'); sys.path.insert(0,'lab/core/tapiz-layer/tapiz-core/core'); import aquiles, rectae; t=aquiles.generar_tapiz(100); print(rectae.validar_firma_tapiz(t))"
+Tapiz: 100 filas, 545 celdas, total=149330            base 40.91872 -> y=40.9187520121 |zeta|=0.001028 <--- MEJOR
+base 14.13473 -> y=14.1347581417 |zeta|=0.001030
+base 32.93506 -> y=32.9350945877 |zeta|=0.001115
+base 30.42488 -> y=30.4249091259 |zeta|=0.001187
+base 21.02204 -> y=21.0220726388 |zeta|=0.001216
+base 25.01086 -> y=25.0108905801 |zeta|=0.001505
+base 37.58618 -> y=37.5862111588 |zeta|=0.002177      {'tapiz_filas': 100, 'mejor_base': 40.9187190121475, 'y': 40.9187520121475, 'zeta_abs': 0.0010281297902581012, 'es_firma_valida': True}
+~ $
