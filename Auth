@@ -1,23 +1,2 @@
-// nodes/github_auth.js
-module.exports = async (state) => {
-
-  // aqui deberias validar contra API real
-  if (!state.github_token) {
-    return { error: "token github faltante" };
-  }
-
-  // simulacion de interseccion
-  const permisos_user = ["read"];
-  const permisos_app = ["read", "write"];
-
-  const interseccion = permisos_user.filter(p =>
-    permisos_app.includes(p)
-  );
-
-  return {
-    ...state,
-    permisos: interseccion,
-    token_valido: true,
-    exp: Date.now() + (8 * 60 * 60 * 1000)
-  };
-};
+Para un sistema lineal e invariante en el tiempo:
+F_out(omega) = H(omega)*F_in(omega)
